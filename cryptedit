@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+echo -n "Password: "
+read -s password
+
+if  [ -z "${password}" ] ; then
+	echo "[error] empty password" 1>&2
+	exit -1
+fi
+
+temp_file=$(mktemp)
+trap 'rm -rf -- "{temp_file}"' EXIT
+
+if  [ ! -f "$1" ] ; then
+	echo "[waring] File "$1" doesn't exist" 1>&2
+	touch "${temp_file}"
+else
+	openssl aes-256-cbc -salt -k "${password}" -a -d -in "$1" -out "${temp_file}"
+fi
+
+
+${EDITOR:-vi} "${temp_file}"
+
+openssl aes-256-cbc -salt -k "${password}" -a -e -in "${temp_file}" -out "${1}"
+
+rm "${temp_file}"
+

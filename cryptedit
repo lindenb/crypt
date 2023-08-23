@@ -17,13 +17,13 @@ if  [ ! -f "$1" ] ; then
 	echo "[waring] File "$1" doesn't exist" 1>&2
 	touch "${temp_file}"
 else
-	openssl aes-256-cbc -salt -k "${password}" -a -d -in "$1" -out "${temp_file}"
+	openssl aes-256-cbc -md md5 -salt -k "${password}" -a -d -in "$1" -out "${temp_file}"
 fi
 
 
 ${EDITOR:-vi} "${temp_file}"
 
-openssl aes-256-cbc -salt -k "${password}" -a -e -in "${temp_file}" -out "${1}"
+openssl aes-256-cbc -md md5 -salt -k "${password}" -a -e -in "${temp_file}" -out "${1}"
 
 rm "${temp_file}"
 
